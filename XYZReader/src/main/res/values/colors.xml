@@ -17,9 +17,12 @@
 
 <resources>
     <color name="photo_placeholder">#ccc</color>
-    <color name="white">#fff</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 
-    <color name="material_deep_orange_500">#FF5722</color>
-    <color name="material_deep_orange_700">#E64A19</color>
-    <color name="material_deep_orange_accent_200">#FF6E40</color>
+    <color name="deep_orange_500">#FF5722</color>
+    <color name="deep_orange_700">#E64A19</color>
+    <color name="deep_orange_accent_200">#FF6E40</color>
+    <color name="grey_500">#9E9E9E</color>
+    <color name="grey_800">#424242</color>
 </resources>

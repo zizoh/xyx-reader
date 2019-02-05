@@ -18,13 +18,17 @@
 <resources>
 
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/material_deep_orange_500</item>
-        <item name="colorPrimaryDark">@color/material_deep_orange_700</item>
-        <item name="colorAccent">@color/material_deep_orange_accent_200</item>
+        <item name="colorPrimary">@color/deep_orange_500</item>
+        <item name="colorPrimaryDark">@color/deep_orange_700</item>
+        <item name="colorAccent">@color/deep_orange_accent_200</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ExpandedTitleTextAppearance" parent="@android:style/TextAppearance.Large">
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

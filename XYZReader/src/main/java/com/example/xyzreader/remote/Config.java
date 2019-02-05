@@ -12,10 +12,10 @@ public class Config {
     static {
         URL url = null;
         try {
-            url = new URL("https://go.udacity.com/xyz-reader-json" );
+            url = new URL("https://raw.githubusercontent.com/SuperAwesomeness/XYZReader/master/data.json");
+
         } catch (MalformedURLException ignored) {
-            // TODO: throw a real error
-            Log.e(TAG, "Please check your internet connection.");
+            Log.w(TAG, ignored.getMessage(), ignored);
         }
 
         BASE_URL = url;

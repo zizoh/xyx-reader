@@ -95,11 +95,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         }
         holder.authorView.setText(mCursor.getString(ArticleLoader.Query.AUTHOR));
 
-//        ImageLoader imageLoader = ImageLoaderHelper.getInstance(holder.thumbnailView.getContext()).getImageLoader();
-//        holder.thumbnailView.setImageUrl(
-//                mCursor.getString(ArticleLoader.Query.THUMB_URL), imageLoader);
-//
-//
         GlideApp.with(holder.thumbnailView.getContext())
                 .asBitmap()
                 .load(mCursor.getString(ArticleLoader.Query.THUMB_URL))
@@ -121,17 +116,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
                             if (bitmap.getHeight() > bitmap.getWidth()) {
                                 holder.thumbnailView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                                holder.thumbnailView.setImageBitmap(bitmap);
                             } else {
                                 holder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-//                                holder.thumbnailView.setImageBitmap(bitmap);
                             }
                         }
                         return false;
                     }
                 })
                 .into(holder.thumbnailView);
-//        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
+        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
     }
 
     @Override
@@ -141,14 +134,14 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
 
     @SuppressWarnings("RedundantCast")
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView thumbnailView;
+        DynamicHeightImageView thumbnailView;
         TextView titleView;
         TextView subtitleView;
         TextView authorView;
 
         ViewHolder(View view) {
             super(view);
-            thumbnailView = (ImageView) view.findViewById(R.id.thumbnail);
+            thumbnailView = (DynamicHeightImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
             subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
             authorView = (TextView) view.findViewById(R.id.article_author);

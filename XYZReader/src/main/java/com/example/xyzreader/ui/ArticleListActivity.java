@@ -1,19 +1,20 @@
 package com.example.xyzreader.ui;
 
-import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
@@ -28,18 +29,22 @@ import com.example.xyzreader.data.UpdaterService;
 @SuppressWarnings("RedundantCast")
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String KEY_LIST_POSITION = "com.example.xyzreader.ui.KEY_LIST_POSITION";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
+    private Parcelable mListState;
+    private StaggeredGridLayoutManager mSglm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        final View toolbarContainerView = findViewById(R.id.toolbar_container);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -52,10 +57,12 @@ public class ArticleListActivity extends AppCompatActivity implements
         });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        getLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(0, null, this);
 
         if (savedInstanceState == null) {
             refresh();
+        } else {
+            mListState = savedInstanceState.getParcelable(KEY_LIST_POSITION);
         }
     }
 
@@ -103,9 +110,11 @@ public class ArticleListActivity extends AppCompatActivity implements
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+        mSglm = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mSglm);
+        if (mListState != null) {
+            mSglm.onRestoreInstanceState(mListState);
+        }
     }
 
     @Override
@@ -113,17 +122,10 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView.setAdapter(null);
     }
 
-    // Project Specification
-    // TODO 1: App uses the Design Support library and its provided widget types (FloatingActionButton, AppBarLayout, SnackBar, etc).
-    // TODO 2: App uses CoordinatorLayout for the main Activity.
-    // TODO 3: App theme extends from AppCompat.
-    // TODO 4: App uses an AppBar and associated Toolbars.
-    // TODO 5: App provides a Floating Action Button for the most common action(s).
-    // TODO 6: App properly specifies elevations for app bars, FABs, and other elements specified in the Material Design specification.
-    // TODO 7: App has a consistent color theme defined in styles.xml. Color theme does not impact usability of the app.
-    // TODO 8: App provides sufficient space between text and surrounding elements.
-    // TODO 9: App uses images that are high quality, specific, and full bleed.
-    // TODO 10: App uses fonts that are either the Android defaults, are complementary, and aren't otherwise distracting.
-    // TODO 11: App conforms to common standards found in the Android Nanodegree General Project Guidelines.
-    // TODO 12: App utilizes stable release versions of all libraries, Gradle, and Android Studio.
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelable(KEY_LIST_POSITION, mSglm.onSaveInstanceState());
+        super.onSaveInstanceState(outState);
+    }
+
 }

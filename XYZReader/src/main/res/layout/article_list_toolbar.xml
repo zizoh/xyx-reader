@@ -5,6 +5,7 @@
     android:id="@+id/toolbar_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:elevation="@dimen/app_bar_elevation"
     android:theme="@style/AppTheme.AppBarOverlay"
     tools:showIn="@layout/activity_article_list">
 

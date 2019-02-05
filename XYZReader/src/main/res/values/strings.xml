@@ -7,10 +7,10 @@
     <string name="action_settings">Settings</string>
     <string name="action_share">Share</string>
 
-    <string name="up">Up</string>
+    <string name="content_desc_up">Up</string>
+    <string name="cont_desc_article_photo">Article photo</string>
 
     <string name="sample_article_title">Ebooks, Neither E, Nor Books</string>
-    <string name="sample_article_subtitle">Feb 12, 2004 by Cory Doctorow</string>
-
+    <string name="sample_article_byline">Feb 12, 2004 by Cory Doctorow</string>
 
 </resources>

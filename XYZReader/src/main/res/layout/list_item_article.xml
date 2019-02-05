@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--suppress AndroidLintContentDescription -->
-        <ImageView
+        <com.example.xyzreader.ui.DynamicHeightImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/photo_placeholder" />
+            android:background="@color/photo_placeholder"
+            android:contentDescription="@string/cont_desc_article_photo" />
 
         <TextView
             android:id="@+id/article_title"
@@ -44,7 +44,7 @@
             android:paddingRight="@dimen/list_item_card_horizontal_padding"
             android:paddingBottom="@dimen/list_item_card_padding"
             android:textColor="@color/white"
-            tools:text="@string/sample_article_subtitle" />
+            tools:text="@string/sample_article_byline" />
 
         <TextView
             android:id="@+id/article_author"
