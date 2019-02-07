@@ -4,8 +4,6 @@ package com.example.xyzreader.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,7 +11,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.graphics.Palette;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -56,14 +53,8 @@ public class ArticleDetailFragment extends Fragment implements
     private Cursor mCursor;
     private long mItemId;
     private View mRootView;
-    private int mMutedColor = 0xFF333333;
-    private ColorDrawable mStatusBarColorDrawable;
 
-    private int mTopInset;
     private ImageView mPhotoView;
-    private int mScrollY;
-    private boolean mIsCard = false;
-    private int mStatusBarFullOpacityBottom;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
@@ -94,12 +85,7 @@ public class ArticleDetailFragment extends Fragment implements
             mItemId = getArguments().getLong(ARG_ITEM_ID);
         }
 
-        mIsCard = getResources().getBoolean(R.bool.detail_is_card);
         setHasOptionsMenu(true);
-    }
-
-    public ArticleDetailActivity getActivityCast() {
-        return (ArticleDetailActivity) getActivity();
     }
 
     @Override
@@ -120,9 +106,6 @@ public class ArticleDetailFragment extends Fragment implements
 
         mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
 
-
-        mStatusBarColorDrawable = new ColorDrawable(0);
-
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,36 +117,7 @@ public class ArticleDetailFragment extends Fragment implements
         });
 
         bindViews();
-        updateStatusBar();
         return mRootView;
-    }
-
-    private void updateStatusBar() {
-        int color = 0;
-        if (mPhotoView != null && mTopInset != 0 && mScrollY > 0) {
-            float f = progress(mScrollY,
-                    mStatusBarFullOpacityBottom - mTopInset * 3,
-                    mStatusBarFullOpacityBottom - mTopInset);
-            color = Color.argb((int) (255 * f),
-                    (int) (Color.red(mMutedColor) * 0.9),
-                    (int) (Color.green(mMutedColor) * 0.9),
-                    (int) (Color.blue(mMutedColor) * 0.9));
-        }
-        mStatusBarColorDrawable.setColor(color);
-    }
-
-    static float progress(float v, float min, float max) {
-        return constrain((v - min) / (max - min), 0, 1);
-    }
-
-    static float constrain(float val, float min, float max) {
-        if (val < min) {
-            return min;
-        } else if (val > max) {
-            return max;
-        } else {
-            return val;
-        }
     }
 
     private Date parsePublishedDate() {
@@ -184,7 +138,6 @@ public class ArticleDetailFragment extends Fragment implements
 
         Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.detail_toolbar);
         final LinearLayout metabar = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
-        CardView card = (CardView) mRootView.findViewById((R.id.card));
         TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
         TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
@@ -207,17 +160,17 @@ public class ArticleDetailFragment extends Fragment implements
 
             String byline;
             Date publishedDate = parsePublishedDate();
+            String format = "%s \u00B7 %s";
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-                byline = String.format("%s by %s", DateUtils.getRelativeTimeSpanString(
-                        publishedDate.getTime(),
-                        System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                        DateUtils.FORMAT_ABBREV_ALL).toString(),
-                        mCursor.getString(ArticleLoader.Query.AUTHOR));
+                byline = String.format(format, mCursor.getString(ArticleLoader.Query.AUTHOR),
+                        DateUtils.getRelativeTimeSpanString(publishedDate.getTime(),
+                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                                DateUtils.FORMAT_ABBREV_ALL).toString());
             } else {
                 // If date is before 1902, just show the string
-                byline = String.format("%s by %s",
-                        outputFormat.format(publishedDate),
-                        mCursor.getString(ArticleLoader.Query.AUTHOR));
+                byline = String.format(format,
+                        mCursor.getString(ArticleLoader.Query.AUTHOR),
+                        outputFormat.format(publishedDate));
             }
             Spanned body = Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).
                     replaceAll("(\r\n|\n)", "<br />"));
@@ -253,7 +206,6 @@ public class ArticleDetailFragment extends Fragment implements
                         }
                     })
                     .into(mPhotoView);
-            updateStatusBar();
 
         } else {
             mRootView.setVisibility(View.GONE);

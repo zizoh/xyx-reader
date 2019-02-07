@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -29,13 +28,12 @@ import com.example.xyzreader.data.UpdaterService;
 @SuppressWarnings("RedundantCast")
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String KEY_LIST_POSITION = "com.example.xyzreader.ui.KEY_LIST_POSITION";
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Toolbar mToolbar;
     private RecyclerView mRecyclerView;
     private Parcelable mListState;
-    private StaggeredGridLayoutManager mSglm;
+    private StaggeredGridLayoutManager mLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +59,17 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         if (savedInstanceState == null) {
             refresh();
-        } else {
-            mListState = savedInstanceState.getParcelable(KEY_LIST_POSITION);
         }
     }
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mListState = mLayoutManager.onSaveInstanceState();
     }
 
     @Override
@@ -110,22 +112,16 @@ public class ArticleListActivity extends AppCompatActivity implements
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
         int columnCount = getResources().getInteger(R.integer.list_column_count);
-        mSglm = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(mSglm);
+        mLayoutManager = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         if (mListState != null) {
-            mSglm.onRestoreInstanceState(mListState);
+            mLayoutManager.onRestoreInstanceState(mListState);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mRecyclerView.setAdapter(null);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelable(KEY_LIST_POSITION, mSglm.onSaveInstanceState());
-        super.onSaveInstanceState(outState);
     }
 
 }
