@@ -23,6 +23,7 @@ allprojects {
         androidSupportVersion = "28.0.0"
         okhttp3Version = "3.10.0"
         glideVersion = "4.8.0"
+        constraintLayoutVersion = "1.1.3"
     }
 }
 

@@ -11,6 +11,10 @@
     <string name="cont_desc_article_photo">Article photo</string>
 
     <string name="sample_article_title">Ebooks, Neither E, Nor Books</string>
-    <string name="sample_article_byline">Feb 12, 2004 by Cory Doctorow</string>
+    <string name="sample_article_author"> Cory Doctorow</string>
+    <string name="sample_article_published_date">Feb 12, 2004</string>
+    <string name="sample_article_middle_dot">·</string>
+
+    <string name="error_interface">Please implement the OnStatusColorReceivedListener interface</string>
 
 </resources>

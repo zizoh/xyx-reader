@@ -4,8 +4,11 @@ package com.example.xyzreader.ui;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
@@ -14,14 +17,16 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
@@ -54,13 +59,12 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
 
-    private ImageView mPhotoView;
-
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss");
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
+    private boolean mIsVisibleToUser = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -80,6 +84,7 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setUserVisibleHint(false);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             mItemId = getArguments().getLong(ARG_ITEM_ID);
@@ -103,8 +108,6 @@ public class ArticleDetailFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
-
-        mPhotoView = (ImageView) mRootView.findViewById(R.id.photo);
 
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,10 +140,13 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         Toolbar toolbar = (Toolbar) mRootView.findViewById(R.id.detail_toolbar);
-        final LinearLayout metabar = (LinearLayout) mRootView.findViewById(R.id.meta_bar);
+        final CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) mRootView.findViewById(R.id.toolbar_layout);
+        final ConstraintLayout metabar = (ConstraintLayout) mRootView.findViewById(R.id.meta_bar);
+        ImageView photoView = (ImageView) mRootView.findViewById(R.id.photo);
         TextView titleView = (TextView) mRootView.findViewById(R.id.article_title);
-        TextView bylineView = (TextView) mRootView.findViewById(R.id.article_byline);
-        bylineView.setMovementMethod(new LinkMovementMethod());
+        TextView authorView = (TextView) mRootView.findViewById(R.id.article_author);
+        authorView.setMovementMethod(new LinkMovementMethod());
+        TextView publishedDateView = (TextView) mRootView.findViewById(R.id.article_published_date);
         TextView bodyView = (TextView) mRootView.findViewById(R.id.article_body);
 
         if (toolbar != null) {
@@ -157,29 +163,31 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
             String title = mCursor.getString(ArticleLoader.Query.TITLE);
+            String author = mCursor.getString(ArticleLoader.Query.AUTHOR);
 
-            String byline;
+            String publishedDateString;
             Date publishedDate = parsePublishedDate();
-            String format = "%s \u00B7 %s";
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
-                byline = String.format(format, mCursor.getString(ArticleLoader.Query.AUTHOR),
-                        DateUtils.getRelativeTimeSpanString(publishedDate.getTime(),
-                                System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
-                                DateUtils.FORMAT_ABBREV_ALL).toString());
+                publishedDateString = DateUtils.getRelativeTimeSpanString(publishedDate.getTime(),
+                        System.currentTimeMillis(), DateUtils.HOUR_IN_MILLIS,
+                        DateUtils.FORMAT_ABBREV_ALL).toString();
             } else {
                 // If date is before 1902, just show the string
-                byline = String.format(format,
-                        mCursor.getString(ArticleLoader.Query.AUTHOR),
-                        outputFormat.format(publishedDate));
+                publishedDateString = outputFormat.format(publishedDate);
             }
             Spanned body = Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).
                     replaceAll("(\r\n|\n)", "<br />"));
 
             titleView.setText(title);
-            bylineView.setText(byline);
+            if (!(getResources().getBoolean(R.bool.detail_is_card)) && title.length() > 24) {
+                title = TextUtils.substring(title, 0, 24) + "...";
+            }
+            collapsingToolbarLayout.setTitle(title);
+            authorView.setText(author);
+            publishedDateView.setText(publishedDateString);
             bodyView.setText(body);
 
-            GlideApp.with(mPhotoView.getContext())
+            GlideApp.with(photoView.getContext())
                     .asBitmap()
                     .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -198,20 +206,37 @@ public class ArticleDetailFragment extends Fragment implements
                             if (bitmap != null) {
                                 Palette palette = Palette.from(bitmap).generate();
                                 int defaultColor = 0xFF333333;
-                                int color = palette.getDarkMutedColor(defaultColor);
+                                int darkMutedColor = palette.getDarkMutedColor(defaultColor);
 
-                                metabar.setBackgroundColor(color);
+//                                if (mIsVisibleToUser)
+                                setStatusBarColor(darkMutedColor);
+                                metabar.setBackgroundColor(darkMutedColor);
+
+                                collapsingToolbarLayout.setContentScrimColor(darkMutedColor);
+                                collapsingToolbarLayout.setStatusBarScrimColor(darkMutedColor);
                             }
                             return false;
                         }
                     })
-                    .into(mPhotoView);
+                    .into(photoView);
 
         } else {
             mRootView.setVisibility(View.GONE);
             titleView.setText("N/A");
-            bylineView.setText("N/A");
+            authorView.setText("N/A");
             bodyView.setText("N/A");
+        }
+    }
+
+    private void setStatusBarColor(int color) {
+        Window window = getActivity().getWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(color);
         }
     }
 
@@ -243,6 +268,14 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            mIsVisibleToUser = true;
+        }
     }
 
 }

@@ -16,9 +16,11 @@
     <dimen name="detail_inner_vert_margin">16dp</dimen>
     <dimen name="detail_metabar_vert_padding">16dp</dimen>
     <dimen name="detail_metabar_title_bottom_padding">4dp</dimen>
+    <dimen name="detail_middle_dot_hort_padding">4dp</dimen>
     <dimen name="detail_body_top_margin">16dp</dimen>
     <dimen name="detail_article_body_bottom_margin">88dp</dimen>
     <dimen name="detail_article_body_top_margin">16dp</dimen>
+    <bool name="detail_is_card">false</bool>
 
     <dimen name="max_width">400dp</dimen>
 
@@ -30,6 +32,6 @@
 
     <dimen name="fab_elevation">6dp</dimen>
     <dimen name="fab_press_translation_z">12dp</dimen>
-    <dimen name="fab_margin">24dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 
 </resources>

@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/photo_placeholder"
-            android:contentDescription="@string/cont_desc_article_photo" />
+            android:contentDescription="@string/cont_desc_article_photo"
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/article_title"
@@ -34,7 +35,7 @@
             tools:text="@string/sample_article_title" />
 
         <TextView
-            android:id="@+id/article_subtitle"
+            android:id="@+id/article_author"
             style="@style/TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,10 +45,10 @@
             android:paddingRight="@dimen/list_item_card_horizontal_padding"
             android:paddingBottom="@dimen/list_item_card_padding"
             android:textColor="@color/white"
-            tools:text="@string/sample_article_byline" />
+            tools:text="@string/sample_article_author" />
 
         <TextView
-            android:id="@+id/article_author"
+            android:id="@+id/article_published_date"
             style="@style/TextAppearance.AppCompat.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,7 +57,9 @@
             android:paddingLeft="@dimen/list_item_card_horizontal_padding"
             android:paddingRight="@dimen/list_item_card_horizontal_padding"
             android:paddingBottom="@dimen/list_item_card_vertical_padding"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            tools:text="@string/sample_article_published_date" />
+
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

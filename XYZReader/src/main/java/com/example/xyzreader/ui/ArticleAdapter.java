@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.DataSource;
@@ -113,12 +112,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                             int defaultColor = 0xFF333333;
                             int color = palette.getDarkMutedColor(defaultColor);
                             holder.itemView.setBackgroundColor(color);
-
-                            if (bitmap.getHeight() > bitmap.getWidth()) {
-                                holder.thumbnailView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                            } else {
-                                holder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                            }
                         }
                         return false;
                     }
@@ -143,7 +136,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             super(view);
             thumbnailView = (DynamicHeightImageView) view.findViewById(R.id.thumbnail);
             titleView = (TextView) view.findViewById(R.id.article_title);
-            subtitleView = (TextView) view.findViewById(R.id.article_subtitle);
+            subtitleView = (TextView) view.findViewById(R.id.article_published_date);
             authorView = (TextView) view.findViewById(R.id.article_author);
         }
     }
